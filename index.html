@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Open Graph para Facebook y X -->
+<meta property="og:title" content="¿Puedes resolver la Trama Koldo?" />
+<meta property="og:description" content="Un puzzle político sencillo e irónico sobre uno de los escándalos del año." />
+<meta property="og:image" content="https://raw.githubusercontent.com/Chaitochai/Koldo/main/puzzle_image.jpg" />
+<meta property="og:url" content="https://chaitochai.github.io/Koldo/" />
+<meta property="og:type" content="website" />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="¿Puedes resolver la Trama Koldo?" />
+<meta name="twitter:description" content="Un puzzle político sencillo e irónico sobre uno de los escándalos del año." />
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Chaitochai/Koldo/main/puzzle_image.jpg" />
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>Rompecabezas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+            touch-action: none;
+        }
+        #timer {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+            color: #666;
+            background-color: transparent;
+            padding: 5px 15px;
+            border-radius: 15px;
+            box-shadow: none;
+            letter-spacing: 1px;
+            font-weight: 300;
+        }
+        #puzzle-container {
+            width: 90vw;
+            max-width: 400px;
+            height: auto;
+            aspect-ratio: 4/3;
+            position: relative;
+            background-color: white;
+            margin: 0 auto;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .puzzle-piece {
+            width: 25%;
+            height: 33.33%;
+            background-size: 400px 300px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            position: absolute;
+            transition: all 0.3s ease;
+            touch-action: none;
+        }
+        #share-button {
+            margin-top: 20px;
+            display: none;
+            padding: 10px 20px;
+            background-color: #25D366;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            max-width: 90%;
+            width: 400px;
+            margin: auto;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .modal-text {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .modal-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+            min-width: 160px;
+        }
+
+        .modal-button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .modal-button.secondary {
+            background-color: #f44336;
+        }
+
+        .modal-button.secondary:hover {
+            background-color: #da190b;
+        }
+
+        .modal-button.whatsapp {
+            background-color: #25D366;
+        }
+
+        .modal-button.whatsapp:hover {
+            background-color: #128C7E;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .game-container {
+            display: none;
+        }
+
+        .game-container.show {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .trophy-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: bounce 1s infinite;
+        }
+
+        .complete-image {
+            width: 100%;
+            max-width: 300px;
+            margin: 1rem auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .time-display {
+            font-size: 2rem;
+            color: #4CAF50;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+
+        .close-button:hover {
+            background-color: #e0e0e0;
+            transform: rotate(90deg);
+        }
+
+        @media (max-width: 480px) {
+            .modal-content {
+                padding: 1.5rem;
+            }
+            .modal-title {
+                font-size: 1.5rem;
+            }
+            .modal-text {
+                font-size: 1rem;
+            }
+            .modal-button {
+                padding: 10px 20px;
+                font-size: 1rem;
+                min-width: 140px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="start-modal" class="modal">
+        <div class="modal-content">
+            <h2 class="modal-title">Resuelve la trama Koldo</h2>
+            <p class="modal-text">
+                Arma el rompecabezas moviendo las piezas a su posición correcta.<br>
+                ¡Buena suerte!
+            </p>
+            <div class="button-container">
+                <button class="modal-button" onclick="startGame()">¡Comenzar!</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-container" class="game-container">
+        <div id="timer">00:00</div>
+        <div id="puzzle-container"></div>
+        <button id="solve-button" onclick="solvePuzzle()" style="display: none; margin-top: 15px; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 25px; font-size: 1.1rem; cursor: pointer;">Resolver Puzzle</button>
+    </div>
+
+    <div id="end-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-button" onclick="exitGame()">×</button>
+            <div class="trophy-icon">😷</div>
+            <img src="puzzle_image.jpg" alt="Puzzle completado" class="complete-image">
+            <h2 class="modal-title">¡Felicidades!</h2>
+            <p class="modal-text" id="end-message"></p>
+            <div class="button-container">
+                <a id="share-button" href="#" target="_blank" class="modal-button whatsapp" style="text-decoration: none; display: none;">📤 Compartir por WhatsApp</a>
+                <button class="modal-button" onclick="restartGame()">Jugar de nuevo</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const rows = 3;
+        const cols = 4;
+        let pieceWidth = 0;
+        let pieceHeight = 0;
+        const imagePath = "puzzle_image.jpg";
+
+        const puzzleContainer = document.getElementById("puzzle-container");
+        const shareButton = document.getElementById("share-button");
+        const startModal = document.getElementById("start-modal");
+        const endModal = document.getElementById("end-modal");
+        const gameContainer = document.getElementById("game-container");
+        const endMessage = document.getElementById("end-message");
+        const timerDisplay = document.getElementById("timer");
+
+        let pieces = [];
+        let lastPiece = null;
+        let emptyPiece = { row: rows - 1, col: cols - 1 };
+        let puzzleCompleted = false;
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let timer = 0;
+        let intervalId;
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            intervalId = setInterval(() => {
+                timer++;
+                timerDisplay.textContent = formatTime(timer);
+                
+                // Show solve button after 30 seconds
+                if (timer === 30) {
+                    document.getElementById('solve-button').style.display = 'block';
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(intervalId);
+        }
+
+        function showModal(modal) {
+            modal.classList.add('show');
+        }
+
+        function hideModal(modal) {
+            modal.classList.remove('show');
+        }
+
+        function startGame() {
+            hideModal(startModal);
+            gameContainer.classList.add('show');
+            createPuzzle();
+            startTimer();
+        }
+
+        function restartGame() {
+            hideModal(endModal);
+            puzzleCompleted = false;
+            timer = 0;
+            timerDisplay.textContent = formatTime(timer);
+            pieces.forEach(piece => piece.remove());
+            pieces = [];
+            document.getElementById('solve-button').style.display = 'none';
+            createPuzzle();
+            startTimer();
+        }
+
+        function exitGame() {
+            window.location.href = 'index.html';
+        }
+
+        function showEndModal(message) {
+            endMessage.textContent = message;
+            showModal(endModal);
+        }
+
+        function getPieceSize() {
+            const containerWidth = puzzleContainer.offsetWidth;
+            const containerHeight = puzzleContainer.offsetHeight;
+            return {
+                width: containerWidth / cols,
+                height: containerHeight / rows
+            };
+        }
+
+        function createPuzzle() {
+            const pieceSize = getPieceSize();
+            pieceWidth = pieceSize.width;
+            pieceHeight = pieceSize.height;
+            
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const piece = document.createElement("div");
+                    piece.className = "puzzle-piece";
+                    piece.style.backgroundImage = `url('${imagePath}')`;
+                    piece.style.backgroundSize = `${pieceWidth * cols}px ${pieceHeight * rows}px`;
+                    piece.style.backgroundPosition = `-${col * pieceWidth}px -${row * pieceHeight}px`;
+                    piece.dataset.row = row;
+                    piece.dataset.col = col;
+                    piece.dataset.originalRow = row;
+                    piece.dataset.originalCol = col;
+                    piece.style.left = `${col * pieceSize.width}px`;
+                    piece.style.top = `${row * pieceSize.height}px`;
+                    
+                    // Add touch events
+                    piece.addEventListener('touchstart', handleTouchStart);
+                    piece.addEventListener('touchmove', handleTouchMove);
+                    piece.addEventListener('touchend', handleTouchEnd);
+                    
+                    // Keep click event for desktop
+                    piece.addEventListener("click", () => movePiece(piece));
+                    
+                    puzzleContainer.appendChild(piece);
+                    pieces.push(piece);
+                }
+            }
+            lastPiece = pieces.pop();
+            lastPiece.remove();
+            shufflePieces();
+        }
+
+        function handleTouchStart(e) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }
+
+        function handleTouchMove(e) {
+            e.preventDefault();
+            const touchX = e.touches[0].clientX;
+            const touchY = e.touches[0].clientY;
+            const deltaX = touchX - touchStartX;
+            const deltaY = touchY - touchStartY;
+            
+            const piece = e.target;
+            const currentLeft = parseFloat(piece.style.left);
+            const currentTop = parseFloat(piece.style.top);
+            
+            piece.style.left = `${currentLeft + deltaX}px`;
+            piece.style.top = `${currentTop + deltaY}px`;
+            
+            touchStartX = touchX;
+            touchStartY = touchY;
+        }
+
+        function handleTouchEnd(e) {
+            const piece = e.target;
+            const pieceSize = getPieceSize();
+            const currentLeft = parseFloat(piece.style.left);
+            const currentTop = parseFloat(piece.style.top);
+            
+            const targetCol = Math.round(currentLeft / pieceSize.width);
+            const targetRow = Math.round(currentTop / pieceSize.height);
+            
+            if (targetCol >= 0 && targetCol < cols && targetRow >= 0 && targetRow < rows) {
+                piece.dataset.col = targetCol;
+                piece.dataset.row = targetRow;
+                updatePiecePosition(piece);
+                
+                if (checkWin()) {
+                    completePuzzle();
+                }
+            } else {
+                updatePiecePosition(piece);
+            }
+        }
+
+        function shufflePieces() {
+            for (let i = pieces.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [pieces[i].dataset.row, pieces[j].dataset.row] = [pieces[j].dataset.row, pieces[i].dataset.row];
+                [pieces[i].dataset.col, pieces[j].dataset.col] = [pieces[j].dataset.col, pieces[i].dataset.col];
+                updatePiecePosition(pieces[i]);
+                updatePiecePosition(pieces[j]);
+            }
+        }
+
+        function updatePiecePosition(piece) {
+            const pieceSize = getPieceSize();
+            piece.style.left = `${piece.dataset.col * pieceSize.width}px`;
+            piece.style.top = `${piece.dataset.row * pieceSize.height}px`;
+        }
+
+        function movePiece(piece) {
+            if (puzzleCompleted) return;
+
+            const row = parseInt(piece.dataset.row);
+            const col = parseInt(piece.dataset.col);
+
+            if ((Math.abs(row - emptyPiece.row) === 1 && col === emptyPiece.col) ||
+                (Math.abs(col - emptyPiece.col) === 1 && row === emptyPiece.row)) {
+                const tempRow = emptyPiece.row;
+                const tempCol = emptyPiece.col;
+                emptyPiece = { row, col };
+                piece.dataset.row = tempRow;
+                piece.dataset.col = tempCol;
+                updatePiecePosition(piece);
+
+                if (checkWin()) {
+                    completePuzzle();
+                }
+            }
+        }
+
+        function checkWin() {
+            return pieces.every(piece => {
+                return (
+                    parseInt(piece.dataset.row) === parseInt(piece.dataset.originalRow) &&
+                    parseInt(piece.dataset.col) === parseInt(piece.dataset.originalCol)
+                );
+            });
+        }
+
+        function completePuzzle() {
+            puzzleCompleted = true;
+            stopTimer();
+            setTimeout(() => {
+                showEndModal(`¡Has completado el rompecabezas en ${formatTime(timer)}!`);
+                const gameUrl = "https://chaitochai.github.io/Koldo/";
+                const shareMessage = `¡He completado el rompecabezas en ${formatTime(timer)}! 🎮\n\n¿Te atreves a intentarlo? Juega aquí:\n${gameUrl}`;
+                shareButton.href = `https://wa.me/?text=${encodeURIComponent(shareMessage)}`;
+                shareButton.style.display = "inline-block";
+            }, 100);
+        }
+
+        function solvePuzzle() {
+            pieces.forEach(piece => {
+                piece.dataset.row = piece.dataset.originalRow;
+                piece.dataset.col = piece.dataset.originalCol;
+                updatePiecePosition(piece);
+            });
+            completePuzzle();
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            pieces.forEach(piece => updatePiecePosition(piece));
+        });
+
+        // Show start modal when the page loads
+        showModal(startModal);
+    </script>
+</body>
+</html>

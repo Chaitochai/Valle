@@ -372,8 +372,12 @@
             pieceWidth = pieceSize.width;
             pieceHeight = pieceSize.height;
             
+            // Create all pieces except the last one (bottom right)
             for (let row = 0; row < rows; row++) {
                 for (let col = 0; col < cols; col++) {
+                    // Skip the bottom right piece
+                    if (row === rows - 1 && col === cols - 1) continue;
+                    
                     const piece = document.createElement("div");
                     piece.className = "puzzle-piece";
                     piece.style.backgroundImage = `url('${imagePath}')`;
@@ -386,15 +390,15 @@
                     piece.style.left = `${col * pieceSize.width}px`;
                     piece.style.top = `${row * pieceSize.height}px`;
                     
-                    // Remove touch events and keep only click event for all devices
                     piece.addEventListener("click", () => movePiece(piece));
                     
                     puzzleContainer.appendChild(piece);
                     pieces.push(piece);
                 }
             }
-            lastPiece = pieces.pop();
-            lastPiece.remove();
+            
+            // Set empty piece position
+            emptyPiece = { row: rows - 1, col: cols - 1 };
             shufflePieces();
         }
 

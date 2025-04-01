@@ -386,12 +386,7 @@
                     piece.style.left = `${col * pieceSize.width}px`;
                     piece.style.top = `${row * pieceSize.height}px`;
                     
-                    // Add touch events
-                    piece.addEventListener('touchstart', handleTouchStart);
-                    piece.addEventListener('touchmove', handleTouchMove);
-                    piece.addEventListener('touchend', handleTouchEnd);
-                    
-                    // Keep click event for desktop
+                    // Remove touch events and keep only click event for all devices
                     piece.addEventListener("click", () => movePiece(piece));
                     
                     puzzleContainer.appendChild(piece);
@@ -401,51 +396,6 @@
             lastPiece = pieces.pop();
             lastPiece.remove();
             shufflePieces();
-        }
-
-        function handleTouchStart(e) {
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-        }
-
-        function handleTouchMove(e) {
-            e.preventDefault();
-            const touchX = e.touches[0].clientX;
-            const touchY = e.touches[0].clientY;
-            const deltaX = touchX - touchStartX;
-            const deltaY = touchY - touchStartY;
-            
-            const piece = e.target;
-            const currentLeft = parseFloat(piece.style.left);
-            const currentTop = parseFloat(piece.style.top);
-            
-            piece.style.left = `${currentLeft + deltaX}px`;
-            piece.style.top = `${currentTop + deltaY}px`;
-            
-            touchStartX = touchX;
-            touchStartY = touchY;
-        }
-
-        function handleTouchEnd(e) {
-            const piece = e.target;
-            const pieceSize = getPieceSize();
-            const currentLeft = parseFloat(piece.style.left);
-            const currentTop = parseFloat(piece.style.top);
-            
-            const targetCol = Math.round(currentLeft / pieceSize.width);
-            const targetRow = Math.round(currentTop / pieceSize.height);
-            
-            if (targetCol >= 0 && targetCol < cols && targetRow >= 0 && targetRow < rows) {
-                piece.dataset.col = targetCol;
-                piece.dataset.row = targetRow;
-                updatePiecePosition(piece);
-                
-                if (checkWin()) {
-                    completePuzzle();
-                }
-            } else {
-                updatePiecePosition(piece);
-            }
         }
 
         function shufflePieces() {

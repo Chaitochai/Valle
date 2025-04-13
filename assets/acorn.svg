@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="30" height="30" version="1.1" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+    <!-- Acorn body with shading -->
+    <ellipse cx="15" cy="18" rx="10" ry="10" fill="#8B4513"/>
+    <ellipse cx="15" cy="18" rx="8" ry="8" fill="#A0522D" opacity="0.5"/>
+    
+    <!-- Acorn cap with texture -->
+    <path d="M5,12 C5,8 15,5 25,12 C25,16 15,19 5,12" fill="#654321"/>
+    <path d="M5,12 C5,8 15,5 25,12" stroke="#4A2C2A" fill="none" stroke-width="0.5"/>
+    <path d="M8,10 C8,8 15,6 22,10" stroke="#4A2C2A" fill="none" stroke-width="0.5"/>
+    <path d="M11,8 C11,7 15,6 19,8" stroke="#4A2C2A" fill="none" stroke-width="0.5"/>
+    
+    <!-- Highlights -->
+    <ellipse cx="12" cy="15" rx="2" ry="1" fill="#FFFFFF" opacity="0.3"/>
+    <ellipse cx="18" cy="15" rx="2" ry="1" fill="#FFFFFF" opacity="0.3"/>
+    
+    <!-- Stem -->
+    <path d="M15,5 C15,5 15,12 15,12" stroke="#4A2C2A" fill="none" stroke-width="1"/>
+    <circle cx="15" cy="5" r="1" fill="#4A2C2A"/>
+</svg> 
